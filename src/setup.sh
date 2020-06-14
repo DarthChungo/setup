@@ -1,13 +1,5 @@
 #!/bin/bash
 
-#
-# This is a simple script to
-# generate a versitale C/C++
-# project  structure with  a
-# makefile to  work  with VS
-# code.
-#
-
 if test "$#" -ne 2; then
   echo
   echo "ERROR: Correct usage should be:"
@@ -44,7 +36,7 @@ cat > src/main.cpp << "EOF1"
 #include <string>
 
 int main(){
-    std::vector<std::string> message{"Hello", " ", "world", " ", "!", "\n"};
+    std::vector<std::string> message{"Hello", " ", "world", "!", "\n"};
     
     for(const std::string& word : message){
         std::cout << word;
@@ -58,12 +50,6 @@ echo "Generated main.cpp"
 
 touch makefile
 cat > makefile << "EOF2"
-#
-# Simple and versatile makefile 
-# for C/C++ projects. Configure 
-# with the following variables:
-#
-
 CXX      := -c++
 CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror
 LDFLAGS  := -L/usr/lib -lstdc++ -lm
@@ -77,16 +63,6 @@ INCLUDE  := -Iinclude/
 
 SRC      := $(shell find src/ -name "*.cpp")
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
-
-#
-# Available make options:
-# - make all
-# - make clean
-# - make program
-# - make build
-# - make release
-# - make debug
-#
 
 all: build $(BIN_DIR)/$(TARGET)
 
@@ -162,7 +138,12 @@ cat > .vscode/tasks.json << "EOF3"
         },
         {
             "label": "launch - release",
-            "dependsOn": ["release", "run"]
+            "type": "shell",
+            "dependsOn": ["release"],
+            "command": "./build/bin/PROJECTNAME",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
         }
     ]
 }
@@ -170,6 +151,39 @@ EOF3
 
 sed -i -e "s/PROJECTNAME/${1}/g" .vscode/tasks.json
 echo "Generated custom build tasks"
+
+touch .vscode/launch.json
+cat > .vscode/launch.json << "EOF4"
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "launch - debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "build/bin/PROJECTNAME",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "debug",
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}
+EOF4
+
+sed -i -e "s/PROJECTNAME/${1}/g" .vscode/launch.json
+echo "Generated custom debug task"
 echo
 
 echo "ALL DONE."
