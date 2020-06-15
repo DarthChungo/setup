@@ -51,7 +51,7 @@ echo "Generated main.cpp"
 touch makefile
 cat > makefile << "EOF2"
 CXX      := -c++
-CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror
+CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror -std=c++17
 LDFLAGS  := -L/usr/lib -lstdc++ -lm
 
 BUILD    := ./build
@@ -79,12 +79,6 @@ $(BIN_DIR)/$(TARGET): $(OBJECTS)
 build:
 	@mkdir -p $(BIN_DIR)
 	@mkdir -p $(OBJ_DIR)
-
-#
-# Configure release and
-# debug configuration
-# here:
-#
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: all
@@ -161,7 +155,7 @@ cat > .vscode/launch.json << "EOF4"
             "name": "launch - debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "build/bin/PROJECTNAME",
+            "program": "${workspaceFolder}/build/bin/PROJECTNAME",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
