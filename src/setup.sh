@@ -43,6 +43,9 @@ cd ${1}
 mkdir .vscode
 
 mkdir build
+mkdir build/release
+mkdir build/debug
+
 mkdir include
 mkdir src
 
@@ -106,7 +109,8 @@ release: CXXFLAGS += -O2
 release: all
 
 clean:
-	-@rm -rvf $(BUILD)/*
+	-@rm -rfv $(BUILD)/release/*; \
+	  rm -rfv $(BUILD)/debug/*
 EOF2
 
 sed -i -e "s/PROJECTNAME/${1}/g" makefile
@@ -118,30 +122,6 @@ cat > .vscode/tasks.json << "EOF3"
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "release",
-            "type": "shell",
-            "command": "make clean release",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
-        },
-        {
-            "label": "debug",
-            "type": "shell",
-            "command": "make clean debug",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
-        },
-        {
-            "label": "run",
-            "type": "shell",
-            "command": "./build/bin/PROJECTNAME",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
-        },
-        {
             "label": "clean",
             "type": "shell",
             "command": "make clean",
@@ -150,10 +130,26 @@ cat > .vscode/tasks.json << "EOF3"
             }
         },
         {
+            "label": "release",
+            "type": "shell",
+            "command": "make release BUILD=./build/release",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "debug",
+            "type": "shell",
+            "command": "make debug BUILD=./build/debug",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
             "label": "launch - release",
             "type": "shell",
             "dependsOn": ["release"],
-            "command": "./build/bin/PROJECTNAME",
+            "command": "./build/release/bin/PROJECTNAME",
             "options": {
                 "cwd": "${workspaceFolder}"
             }
@@ -174,9 +170,9 @@ cat > .vscode/launch.json << "EOF4"
             "name": "launch - debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/PROJECTNAME",
+            "program": "${workspaceFolder}/build/debug/bin/PROJECTNAME",
             "args": [],
-            "stopAtEntry": false,
+            "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
