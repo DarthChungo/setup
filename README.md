@@ -12,5 +12,5 @@ build directory.
 ## License
 
 This work is licensed under the MIT license, and as such, a
-notice shall be provided on all extensions of said script,
+notice must be provided on all extensions of said script,
 excluding projects generated with this tool.
